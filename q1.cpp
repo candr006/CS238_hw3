@@ -82,9 +82,11 @@ vector<vector<char> > threeSeqAlign(vector<char> s1,vector<char> s2, vector<char
 	//divide and conquer sequence
 	//recursively call first half of sequences
 	threeSeqAlign(getHalfVector("first",s1),getHalfVector("first",s2), getHalfVector("first",s3));
+	cout << "half1 complete" << endl;
 	
 	//recursively call second half of sequences
 	threeSeqAlign(getHalfVector("second",s1),getHalfVector("second",s2), getHalfVector("second",s3));
+	cout << "half2 complete" << endl;
 	
 }
 	
