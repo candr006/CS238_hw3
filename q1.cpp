@@ -30,6 +30,14 @@ void printVector(vector<char> v, string message){
 }
 
 
+void printVectorOfVectors(vector<vector<char> > v, string message){
+	cout << message << endl;
+	for(int i=0; i<v.size(); i++){
+		printVector(v[i], "----- s" + to_string((i+1)) + " ------" );
+	}
+}
+
+
 int SPScore(string x, string y, string z){
 	int score=0;
 	
@@ -56,7 +64,7 @@ vector<char> getHalfVector(string half, vector<char> v){
 
 
 vector<vector<char> > threeSeqAlign(vector<char> s1,vector<char> s2, vector<char> s3){
-	cout << "pos1" << endl;
+	//cout << "pos1" << endl;
 	int max=s1.size();
 	max=(s2.size()>max)?s2.size():max;
 	max=(s3.size()>max)?s3.size():max;
@@ -64,14 +72,14 @@ vector<vector<char> > threeSeqAlign(vector<char> s1,vector<char> s2, vector<char
 	int min= s1.size();
 	min=(s2.size()<min)?s2.size():min;
 	min=(s3.size()<min)?s3.size():min;
-	cout << "pos2" << endl;
+	//cout << "pos2" << endl;
 	
 	cout << endl << endl;
 	printVector(s1, "--------------- s1, size: "+to_string(s1.size())+"----------------");
 	printVector(s2, "--------------- s2, size: "+to_string(s2.size())+"----------------");
 	printVector(s3, "--------------- s3, size: "+to_string(s3.size())+"----------------");
 	
-	cout << "pos3" << endl;
+	//cout << "pos3" << endl;
 	
 	if (min<=1 || max<=1 || s1.empty() || s2.empty() || s3.empty()){
 		cout << "HERE!" << endl;
@@ -79,19 +87,20 @@ vector<vector<char> > threeSeqAlign(vector<char> s1,vector<char> s2, vector<char
 		align.push_back(s1);
 		align.push_back(s2);
 		align.push_back(s3);
+		//printVectorOfVectors(align,"");
 		return align;
 	}
-	cout << "pos4" << endl;
+	//cout << "pos4" << endl;
 	
 	if(s1.size()>1 && s2.size() > 1 && s3.size()>1){
 		//divide and conquer sequence
 		//recursively call first half of sequences
-		cout << "pos5" << endl;
-		return threeSeqAlign(getHalfVector("first",s1),getHalfVector("first",s2), getHalfVector("first",s3));
+		//cout << "pos5" << endl;
+		threeSeqAlign(getHalfVector("first",s1),getHalfVector("first",s2), getHalfVector("first",s3));
 		cout << "half1 complete" << endl;
 		
 		//recursively call second half of sequences
-		cout << "pos6" << endl;
+		//cout << "pos6" << endl;
 		return threeSeqAlign(getHalfVector("second",s1),getHalfVector("second",s2), getHalfVector("second",s3));
 	}
 	
