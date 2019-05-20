@@ -55,7 +55,14 @@ int compareChars(char s1,char s2, int score){
 		if((s1=='\0' && s2!='\0') || (s1!='\0' && s2=='\0')){
 			return (score+indel);
 		}
-		else return score;
+		else {
+			return score;
+		}
+		
+		cout << ((s1=='\0')?'-':s1);
+		cout << endl; 
+		cout << ((s2=='\0')?'-':s2);
+		cout << "---------------------------------------------" << endl;
 }
 
 
@@ -65,6 +72,12 @@ int SPScore(vector<char> s1,vector<char> s2, vector<char> s3, int max_size){
 	for(int i=0; i<max_size; i++){
 		//r1 and r2
 		score=compareChars(padChar(i,s1),padChar(i,s2),score);
+		
+		//r2 and r3
+		score=compareChars(padChar(i,s2),padChar(i,s3),score);
+		
+		//r1 and r3
+		score=compareChars(padChar(i,s1),padChar(i,s3),score);
 	}
 	
 	return score;
@@ -95,9 +108,9 @@ vector<vector<char> > threeSeqAlign(vector<char> s1,vector<char> s2, vector<char
 	min=(s3.size()<min)?s3.size():min;
 	
 	cout << endl << endl;
-	printVector(s1, "--------------- s1, size: "+to_string(s1.size())+"----------------");
-	printVector(s2, "--------------- s2, size: "+to_string(s2.size())+"----------------");
-	printVector(s3, "--------------- s3, size: "+to_string(s3.size())+"----------------");
+	//printVector(s1, "--------------- s1, size: "+to_string(s1.size())+"----------------");
+	//printVector(s2, "--------------- s2, size: "+to_string(s2.size())+"----------------");
+	//printVector(s3, "--------------- s3, size: "+to_string(s3.size())+"----------------");
 
 	
 	if (min<=1 || max<=1 || s1.empty() || s2.empty() || s3.empty()){
