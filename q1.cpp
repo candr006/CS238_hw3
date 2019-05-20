@@ -8,11 +8,11 @@
 using namespace std;
 
 //set the constant values here 
-const int match=5;
-const int mismatch=-4;
-const int indel=-8;
+int match=5;
+int mismtch=-4;
+int indel=-8;
 
-//vector<int> sorted_sp_vals{match,mismatch,indel};
+//vector<int> sorted_sp_vals{match,mismtch,indel};
 //sort descending order
 //sort(v.begin(), v.end(), greater<int>()); 
 
@@ -37,22 +37,22 @@ void printVectorOfVectors(vector<vector<char> > v, string message){
 	}
 }
 
-bool indexExists(int i, vector<char> seq){
+char padChar(int i, vector<char> seq){
 	if(seq.size()>=(i+1)){
-		return true;
+		return seq[i];
 	}else{
-		return false;
+		return '\0';
 	}
 }
 
-int compareChars(int r1, int r2, char s1,char s2, char s3, int score){
-		if((s1==s2) && s1!=""){
+int compareChars(char s1,char s2, int score){
+		if((s1==s2) && (s1!='\0')){
 			return (score+match);
 		}
-		if(s1!=s2 && (s1!="") && (s2!="")){
-			return (score+mismatch);
+		if(s1!=s2 && (s1!='\0') && (s2!='\0')){
+			return (score+mismtch);
 		}
-		if((s1=="" && s2!="") || (s1!="" && s2=="")){
+		if((s1=='\0' && s2!='\0') || (s1!='\0' && s2=='\0')){
 			return (score+indel);
 		}
 		else return score;
@@ -62,20 +62,9 @@ int compareChars(int r1, int r2, char s1,char s2, char s3, int score){
 int SPScore(vector<char> s1,vector<char> s2, vector<char> s3, int max_size){
 	int score=0;
 	
-	for(i=0; i<max_size; i++){
-		if(s1.size()>=(i+1)){
-			if(s2.size()>=(i+1)){
-				if(s1[i]==s2[i]){
-					score+=match;
-				}
-				else{
-					score+=mismatch;
-				}
-					
-			}else{
-				score+=indel;
-			}
-		}
+	for(int i=0; i<max_size; i++){
+		//r1 and r2
+		score=compareChars(padChar(i,s1),padChar(i,s2),score);
 	}
 	
 	return score;
