@@ -37,14 +37,46 @@ void printVectorOfVectors(vector<vector<char> > v, string message){
 	}
 }
 
+bool indexExists(int i, vector<char> seq){
+	if(seq.size()>=(i+1)){
+		return true;
+	}else{
+		return false;
+	}
+}
 
-int SPScore(string x, string y, string z){
+int compareChars(int r1, int r2, char s1,char s2, char s3, int score){
+		if((s1==s2) && s1!=""){
+			return (score+match);
+		}
+		if(s1!=s2 && (s1!="") && (s2!="")){
+			return (score+mismatch);
+		}
+		if((s1=="" && s2!="") || (s1!="" && s2=="")){
+			return (score+indel);
+		}
+		else return score;
+}
+
+
+int SPScore(vector<char> s1,vector<char> s2, vector<char> s3, int max_size){
 	int score=0;
 	
-	if(x==y){
-		score+=match;
+	for(i=0; i<max_size; i++){
+		if(s1.size()>=(i+1)){
+			if(s2.size()>=(i+1)){
+				if(s1[i]==s2[i]){
+					score+=match;
+				}
+				else{
+					score+=mismatch;
+				}
+					
+			}else{
+				score+=indel;
+			}
+		}
 	}
-	
 	
 	return score;
 }
@@ -63,8 +95,8 @@ vector<char> getHalfVector(string half, vector<char> v){
 }
 
 
+
 vector<vector<char> > threeSeqAlign(vector<char> s1,vector<char> s2, vector<char> s3){
-	//cout << "pos1" << endl;
 	int max=s1.size();
 	max=(s2.size()>max)?s2.size():max;
 	max=(s3.size()>max)?s3.size():max;
@@ -72,17 +104,14 @@ vector<vector<char> > threeSeqAlign(vector<char> s1,vector<char> s2, vector<char
 	int min= s1.size();
 	min=(s2.size()<min)?s2.size():min;
 	min=(s3.size()<min)?s3.size():min;
-	//cout << "pos2" << endl;
 	
 	cout << endl << endl;
 	printVector(s1, "--------------- s1, size: "+to_string(s1.size())+"----------------");
 	printVector(s2, "--------------- s2, size: "+to_string(s2.size())+"----------------");
 	printVector(s3, "--------------- s3, size: "+to_string(s3.size())+"----------------");
-	
-	//cout << "pos3" << endl;
+
 	
 	if (min<=1 || max<=1 || s1.empty() || s2.empty() || s3.empty()){
-		cout << "HERE!" << endl;
 		vector<vector<char> > align;
 		align.push_back(s1);
 		align.push_back(s2);
@@ -90,17 +119,13 @@ vector<vector<char> > threeSeqAlign(vector<char> s1,vector<char> s2, vector<char
 		//printVectorOfVectors(align,"");
 		return align;
 	}
-	//cout << "pos4" << endl;
 	
 	if(s1.size()>1 && s2.size() > 1 && s3.size()>1){
 		//divide and conquer sequence
 		//recursively call first half of sequences
-		//cout << "pos5" << endl;
 		threeSeqAlign(getHalfVector("first",s1),getHalfVector("first",s2), getHalfVector("first",s3));
-		cout << "half1 complete" << endl;
 		
 		//recursively call second half of sequences
-		//cout << "pos6" << endl;
 		return threeSeqAlign(getHalfVector("second",s1),getHalfVector("second",s2), getHalfVector("second",s3));
 	}
 	
