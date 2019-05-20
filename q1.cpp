@@ -11,6 +11,9 @@ using namespace std;
 int match=5;
 int mismtch=-4;
 int indel=-8;
+string s1_fitting="";
+string s2_fitting="";
+string s3_fitting="";
 
 //vector<int> sorted_sp_vals{match,mismtch,indel};
 //sort descending order
@@ -45,39 +48,64 @@ char padChar(int i, vector<char> seq){
 	}
 }
 
-int compareChars(char s1,char s2, int score){
+void updateFitting(string name1, string name2, char seq1, char seq2){
+		if(name1=="s1")
+			s1_fitting+=seq1;
+		if(name1=="s2")
+			s2_fitting+=seq1;
+		if(name1=="s3")
+			s3_fitting+=seq1;
+	
+		if(name2=="s1")
+			s1_fitting+=seq2;
+		if(name2=="s2")
+			s2_fitting+=seq2;
+		if(name2=="s3")
+			s3_fitting+=seq2;
+		
+	return;
+}
+
+int compareChars(char s1,char s2, int score, string name1, string name2){
+	
 		if((s1==s2) && (s1!='\0')){
+			updateFitting(name1,name2,s1,s2);
 			return (score+match);
 		}
 		if(s1!=s2 && (s1!='\0') && (s2!='\0')){
+			updateFitting(name1,name2,s1,s2);
 			return (score+mismtch);
 		}
 		if((s1=='\0' && s2!='\0') || (s1!='\0' && s2=='\0')){
+			if(s1=='\0'){
+				updateFitting(name1,name2,'-',s2);
+			}
+			else{
+				updateFitting(name1,name2,s1,'-');
+			}
 			return (score+indel);
 		}
 		else {
+			updateFitting(name1,name2,'-','-');
 			return score;
 		}
 		
-		cout << ((s1=='\0')?'-':s1);
-		cout << endl; 
-		cout << ((s2=='\0')?'-':s2);
-		cout << "---------------------------------------------" << endl;
 }
 
 
-int SPScore(vector<char> s1,vector<char> s2, vector<char> s3, int max_size){
+
+int getSPScore(vector<char> s1,vector<char> s2, vector<char> s3, int max_size){
 	int score=0;
 	
 	for(int i=0; i<max_size; i++){
 		//r1 and r2
-		score=compareChars(padChar(i,s1),padChar(i,s2),score);
+		score=compareChars(padChar(i,s1),padChar(i,s2),score, "s1","s2");
 		
 		//r2 and r3
-		score=compareChars(padChar(i,s2),padChar(i,s3),score);
+		score=compareChars(padChar(i,s2),padChar(i,s3),score,"s2","s3");
 		
 		//r1 and r3
-		score=compareChars(padChar(i,s1),padChar(i,s3),score);
+		score=compareChars(padChar(i,s1),padChar(i,s3),score,"s1","s3");
 	}
 	
 	return score;
@@ -107,7 +135,6 @@ vector<vector<char> > threeSeqAlign(vector<char> s1,vector<char> s2, vector<char
 	min=(s2.size()<min)?s2.size():min;
 	min=(s3.size()<min)?s3.size():min;
 	
-	cout << endl << endl;
 	//printVector(s1, "--------------- s1, size: "+to_string(s1.size())+"----------------");
 	//printVector(s2, "--------------- s2, size: "+to_string(s2.size())+"----------------");
 	//printVector(s3, "--------------- s3, size: "+to_string(s3.size())+"----------------");
@@ -118,7 +145,7 @@ vector<vector<char> > threeSeqAlign(vector<char> s1,vector<char> s2, vector<char
 		align.push_back(s1);
 		align.push_back(s2);
 		align.push_back(s3);
-		//printVectorOfVectors(align,"");
+		int spScore= getSPScore(s1,s2,s3,max);
 		return align;
 	}
 	
@@ -158,5 +185,9 @@ int main(int argc, char** argv){
 	vector<char> s3(s3_t.begin(), s3_t.end()); 
 	
 	threeSeqAlign(s1, s2, s3);
+	
+	cout << s1_fitting << endl;
+	cout << s2_fitting << endl;
+	cout << s3_fitting << endl;
 	
 }
