@@ -19,6 +19,7 @@ int size_seq2=0;
 int size_seq3=0;
 
 void addGap(char* seq, int gap_pos){
+
 	for(int i=sizeof(seq); i>gap_pos; i--)
 	{
 		seq[i]=seq[i-1];
@@ -63,9 +64,9 @@ int getMax2D(int v1, int v2, int v3, char* s1, char* s2, int i, int j){
 			return v3;
 		}
 		else{
-			cout <<"BEFORE: "<< s2 << endl;
+			cout <<"BEFORE: "<< s2 << " " <<sizeof(s2) << endl;
 			addGap(s1,i);
-			cout << "AFTER: " << s2 << endl;
+			cout << "AFTER: " << s2 << " " <<sizeof(s2) << endl;
 			return v2;
 		}
 	}
