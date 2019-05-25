@@ -18,6 +18,15 @@ int size_seq1=0;
 int size_seq2=0;
 int size_seq3=0;
 
+void addGap(char* seq, int gap_pos){
+	for(int i=sizeof(seq); i>gap_pos; i--)
+	{
+		seq[i]=seq[i-1];
+	}
+	seq[gap_pos]='-';
+	return;
+}
+
 int getScore(char s1, char s2){
 	if((s1==s2) && (s1!='-')){
 		return match;
@@ -34,7 +43,7 @@ int getScore(char s1, char s2){
 
 }
 
-int getMax(int v1, int v2, int v3){
+int getMax2D(int v1, int v2, int v3, char* s1, char* s2, int i, int j){
 	int max;
 	
 	if(v1>=v2){
@@ -43,6 +52,9 @@ int getMax(int v1, int v2, int v3){
 			return v3;
 		}
 		else{
+			cout <<"BEFORE: "<< s2 << endl;
+			addGap(s2,j);
+			cout << "AFTER: " << s2 << endl;
 			return v1;
 		}
 	}else{
@@ -51,6 +63,9 @@ int getMax(int v1, int v2, int v3){
 			return v3;
 		}
 		else{
+			cout <<"BEFORE: "<< s2 << endl;
+			addGap(s1,i);
+			cout << "AFTER: " << s2 << endl;
 			return v2;
 		}
 	}
@@ -92,9 +107,9 @@ void pairAlign(char seq1[], char seq2[]){
 	while (i<sizeof(seq1)){
 		j=1;
 		while (j<sizeof(seq2)){
-			s[i][j]=getMax(s[i-1][j]+getScore(seq1[i],'-'),
-							s[i][j-1]+getScore('-',seq2[j]),
-							s[i-1][j-1]+getScore(seq1[i],seq2[j]));
+			s[i][j]=getMax2D(s[i-1][j]+getScore(seq1[i],'-'),
+					s[i][j-1]+getScore('-',seq2[j]),
+					s[i-1][j-1]+getScore(seq1[i],seq2[j]), seq1, seq2, i, j);
 			
 				//cout << i << "," << j << ": " << s[i][j] << endl;
 							
