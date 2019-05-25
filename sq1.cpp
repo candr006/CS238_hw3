@@ -64,8 +64,11 @@ void pairAlign(char seq1[], char seq2[]){
 	}
 	int i=1;
 	int j=1;
+
+	cout << sizeof(seq1) << endl;
 	
 	while (i<sizeof(seq1)){
+		j=1;
 		while (j<sizeof(seq2)){
 			s[i][j]=getMax(s[i-1][j]+getScore(seq1[i],'-'),
 							s[i][j-1]+getScore('-',seq2[j]),
