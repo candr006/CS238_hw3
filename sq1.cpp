@@ -172,7 +172,7 @@ void pairAlign(char seq1[], char seq2[]){
 			}
 		}else{
 			s1_i+=seq1[i];
-			s2_j+=seq1[j];
+			s2_j+=seq2[j];
 		}
 
 		seq1_align.insert(0,s1_i);
