@@ -11,9 +11,9 @@
 using namespace std;
 
 //set the constant values here 
-int match=5;
-int mismtch=-4;
-int indel=-8;
+int match=1;
+int mismtch=-1;
+int indel=-2;
 
 int size_seq1=0;
 int size_seq2=0;
@@ -109,13 +109,26 @@ void pairAlign(char *seq1, char *seq2, int size1, int size2){
 	
 	int s[size1][size2];
 	
-	for(int i=0; i< size1; i++){
-		s[0][i]=0;
+	cout << "first row" << endl;
+	for(int i=0; i< size2; i++){
+		if(i==0)
+			s[0][i]=0;
+		else{
+			s[0][i]=((i)*indel);
+		}
+		cout << s[0][i] << ",";
 	}
-	
-	for(int j=0; j<size2;j++){
-		s[j][0]=0;	
+	cout <<endl;
+	cout << "first col" << endl;
+	for(int j=0; j<size1;j++){
+		if(j==0)
+			s[j][0]=0;
+		else{
+			s[j][0]=((j)*indel);
+		}
+		cout << s[j][0] << ",";
 	}
+	cout <<endl;
 	int i=1;
 	int j=1;
 
@@ -140,8 +153,11 @@ void pairAlign(char *seq1, char *seq2, int size1, int size2){
 
 
 	//traceback
+	for (const auto &p : gap_locations2D) {
+		std::cout << "m[" << (p.first).first <<"," << (p.first).second << "] = " << p.second << '\n';
+	}
 
-	while(j>0){
+	while(j>=0){
 		//getMax
 		int k=0;
 		int max=0;
