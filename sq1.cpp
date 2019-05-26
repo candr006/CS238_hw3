@@ -6,6 +6,7 @@
 #include <string> 
 #include <algorithm>   
 #include <utility> 
+#include <map>
 
 using namespace std;
 
@@ -18,13 +19,22 @@ int size_seq1=0;
 int size_seq2=0;
 int size_seq3=0;
 
+string seq1_align="";
+string seq2_align="";
+
+map<pair<int,int>, int> gap_locations2D;
+
 void addGap(char* seq, int gap_pos){
 
+	char* seq_updated;
+	
 	for(int i=sizeof(seq); i>gap_pos; i--)
 	{
-		seq[i]=seq[i-1];
+		seq_updated[i]=seq[i-1];
 	}
-	seq[gap_pos]='-';
+	seq_updated[gap_pos]='-';
+	
+	seq=seq_updated;
 	return;
 }
 
@@ -50,23 +60,27 @@ int getMax2D(int v1, int v2, int v3, char* s1, char* s2, int i, int j){
 	if(v1>=v2){
 		max=v1;
 		if (v3>v1){
+			seq1_align+=s1[i];
+			seq2_align+=s2[j];
 			return v3;
 		}
 		else{
-			cout <<"BEFORE: "<< s2 << endl;
-			addGap(s2,j);
-			cout << "AFTER: " << s2 << endl;
+			//add gap to seq2
+			pair<int,int> a (i,j);
+			gap_locations2D[a]=2;
 			return v1;
 		}
 	}else{
 		max=v2;
 		if (v3>v2){
+			seq1_align+=s1[i];
+			seq2_align+=s2[j];
 			return v3;
 		}
 		else{
-			cout <<"BEFORE: "<< s2 << " " <<sizeof(s2) << endl;
-			addGap(s1,i);
-			cout << "AFTER: " << s2 << " " <<sizeof(s2) << endl;
+			//add gap to seq1
+			pair<int,int> a (i,j);
+			gap_locations2D[a]=1;
 			return v2;
 		}
 	}
@@ -91,6 +105,7 @@ int getMaxIndex2D(int **s, int col, int size){
 }
 
 void pairAlign(char seq1[], char seq2[]){
+	gap_locations2D.clear();
 	int s[sizeof(seq1)][sizeof(seq2)];
 	
 	for(int i=0; i< sizeof(seq1); i++){
@@ -103,8 +118,7 @@ void pairAlign(char seq1[], char seq2[]){
 	int i=1;
 	int j=1;
 
-	cout << sizeof(seq1) << endl;
-	
+
 	while (i<sizeof(seq1)){
 		j=1;
 		while (j<sizeof(seq2)){
@@ -123,8 +137,7 @@ void pairAlign(char seq1[], char seq2[]){
 	j=sizeof(seq2);
 
 	//traceback
-	string seq1_align="";
-	string seq2_align="";
+
 	while(j>0){
 		//getMax
 		int k=0;
@@ -140,11 +153,27 @@ void pairAlign(char seq1[], char seq2[]){
 		}
 
 		i=max_i;
-		
 		string s1_i;
-		s1_i+=seq1[i];
 		string s2_j;
-		s2_j+=seq1[j];
+		
+		
+		//check if a gap exists here
+		pair<int,int> a (i,j);
+		if(gap_locations2D.count(a)>0){
+			if(gap_locations2D[a]==1){
+				//add gap to seq 1
+				s1_i+='-';			
+				s2_j+=seq1[j];
+				
+			}else{
+				//add gap to seq 2
+				s1_i+=seq1[i];
+				s2_j+='-';
+			}
+		}else{
+			s1_i+=seq1[i];
+			s2_j+=seq1[j];
+		}
 
 		seq1_align.insert(0,s1_i);
 		seq2_align.insert(0,s2_j);
@@ -194,7 +223,8 @@ int main(int argc, char** argv){
     char s3[s3_t.length()+1]; 
 	strcpy(s3, s3_t.c_str());
 	size_seq3=sizeof(s3);
-	
+	cout << "s1: " << s1 << endl;
+	cout << "s2: " << s2 << endl;
 	pairAlign(s1,s2);
 	
 }
