@@ -60,8 +60,6 @@ int getMax2D(int v1, int v2, int v3, char* s1, char* s2, int i, int j){
 	if(v1>=v2){
 		max=v1;
 		if (v3>v1){
-			seq1_align+=s1[i];
-			seq2_align+=s2[j];
 			return v3;
 		}
 		else{
@@ -73,8 +71,6 @@ int getMax2D(int v1, int v2, int v3, char* s1, char* s2, int i, int j){
 	}else{
 		max=v2;
 		if (v3>v2){
-			seq1_align+=s1[i];
-			seq2_align+=s2[j];
 			return v3;
 		}
 		else{
@@ -104,37 +100,44 @@ int getMaxIndex2D(int **s, int col, int size){
 	return max_i;
 }
 
-void pairAlign(char seq1[], char seq2[]){
+void pairAlign(char *seq1, char *seq2, int size1, int size2){
 	gap_locations2D.clear();
-	int s[sizeof(seq1)][sizeof(seq2)];
+	//seq1_align="";
+	//seq2_align="";
+	cout << "seq1 size: " << size1 << endl;
+	cout << "seq2 size: " << size2 << endl;
 	
-	for(int i=0; i< sizeof(seq1); i++){
+	int s[size1][size2];
+	
+	for(int i=0; i< size1; i++){
 		s[0][i]=0;
 	}
 	
-	for(int j=0; j<sizeof(seq2);j++){
+	for(int j=0; j<size2;j++){
 		s[j][0]=0;	
 	}
 	int i=1;
 	int j=1;
 
 
-	while (i<sizeof(seq1)){
+	while (i<size1){
 		j=1;
-		while (j<sizeof(seq2)){
+		while (j<size2){
+			
 			s[i][j]=getMax2D(s[i-1][j]+getScore(seq1[i],'-'),
 					s[i][j-1]+getScore('-',seq2[j]),
 					s[i-1][j-1]+getScore(seq1[i],seq2[j]), seq1, seq2, i, j);
 			
-				//cout << i << "," << j << ": " << s[i][j] << endl;
+				cout <<"["<< s[i][j] <<"] ";
 							
 			j++;
 		}
-		
+		cout << endl;
 		i++;
 	}
 
-	j=sizeof(seq2);
+	j=size2;
+
 
 	//traceback
 
@@ -144,7 +147,7 @@ void pairAlign(char seq1[], char seq2[]){
 		int max=0;
 		int max_i=0;
 
-		while (k<sizeof(seq1)){
+		while (k<size1){
 			if(s[k][j] > max){
 				max=s[k][j];
 				max_i=k;
@@ -175,8 +178,13 @@ void pairAlign(char seq1[], char seq2[]){
 			s2_j+=seq2[j];
 		}
 
+		//cout << "BEFORE: " << endl << seq1_align << " - " << endl;
+		//cout << "BEFORE: " << endl << seq2_align << " - " << endl;
 		seq1_align.insert(0,s1_i);
 		seq2_align.insert(0,s2_j);
+		
+		//cout << "AFTER: " << endl << seq1_align << " - " << endl;
+		//cout << "AFTER: " << endl << seq2_align << " - " << endl;
 
 		j--;
 
@@ -225,6 +233,6 @@ int main(int argc, char** argv){
 	size_seq3=sizeof(s3);
 	cout << "s1: " << s1 << endl;
 	cout << "s2: " << s2 << endl;
-	pairAlign(s1,s2);
+	pairAlign(s1,s2, sizeof(s1), sizeof(s2));
 	
 }
