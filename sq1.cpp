@@ -109,24 +109,24 @@ void pairAlign(char *seq1, char *seq2, int size1, int size2){
 	
 	int s[size1][size2];
 	
-	cout << "first row" << endl;
+	//cout << "first row" << endl;
 	for(int i=0; i< size2; i++){
 		if(i==0)
 			s[0][i]=0;
 		else{
 			s[0][i]=((i)*indel);
 		}
-		cout << s[0][i] << ",";
+		//cout << s[0][i] << ",";
 	}
 	cout <<endl;
-	cout << "first col" << endl;
+	//cout << "first col" << endl;
 	for(int j=0; j<size1;j++){
 		if(j==0)
 			s[j][0]=0;
 		else{
 			s[j][0]=((j)*indel);
 		}
-		cout << s[j][0] << ",";
+		//cout << s[j][0] << ",";
 	}
 	cout <<endl;
 	int i=1;
@@ -137,11 +137,12 @@ void pairAlign(char *seq1, char *seq2, int size1, int size2){
 		j=1;
 		while (j<size2){
 			
-			s[i][j]=getMax2D(s[i-1][j]+getScore(seq1[i],'-'),
-					s[i][j-1]+getScore('-',seq2[j]),
-					s[i-1][j-1]+getScore(seq1[i],seq2[j]), seq1, seq2, i, j);
+			s[i][j]=getMax2D(s[i-1][j]+getScore(seq1[i-1],'-'),
+					s[i][j-1]+getScore('-',seq2[j-1]),
+					s[i-1][j-1]+getScore(seq1[i-1],seq2[j-1]), seq1, seq2, i, j);
 			
-				cout <<"["<< s[i][j] <<"] ";
+				cout << seq1[i-1] <<" - " << seq2[j-1];
+				cout <<":["<< s[i][j] <<"] ";
 							
 			j++;
 		}
@@ -153,9 +154,6 @@ void pairAlign(char *seq1, char *seq2, int size1, int size2){
 
 
 	//traceback
-	for (const auto &p : gap_locations2D) {
-		std::cout << "m[" << (p.first).first <<"," << (p.first).second << "] = " << p.second << '\n';
-	}
 
 	while(j>=0){
 		//getMax
