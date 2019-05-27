@@ -160,6 +160,8 @@ void pairAlign(char *seq1, char *seq2, int size1, int size2){
 		int k=1;
 		int max=-100000000;
 		int max_i=0;
+		string s1_i;
+		string s2_j;
 		
 		//cout << "[" << i << ", " << j << "]" <<endl;
 
@@ -173,10 +175,29 @@ void pairAlign(char *seq1, char *seq2, int size1, int size2){
 			}
 
 			i=max_i;
-			string s1_i;
-			string s2_j;
+
 			cout << "I: " << i << endl;
 		}
+		
+			if((!gap1 && !gap2)){
+					s1_i+=seq1[i-1];
+					s2_j+=seq2[j-1];
+					
+					seq1_align.insert(0,s1_i);
+					seq2_align.insert(0,s2_j);
+				}
+			else if(gap1){
+				seq1_align.insert(0,"-");
+				s2_j+=seq2[j-1];
+				seq2_align.insert(0,s2_j);
+			}
+			else if(gap2){
+				s1_i+=seq1[i-1];
+				seq1_align.insert(0,s1_i);
+				seq2_align.insert(0,"-");
+			}
+			
+			
 			first_run=false;
 			gap1=false;
 			gap2=false;
