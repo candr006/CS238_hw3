@@ -135,8 +135,8 @@ void pairAlign(char *seq1, char *seq2, int size1, int size2){
 					s[i][j-1]+getScore('-',seq2[j-1]),
 					s[i-1][j-1]+getScore(seq1[i-1],seq2[j-1]));
 			
-				//cout << seq1[i-1] <<" - " << seq2[j-1];
-				//cout <<":["<< s[i][j] <<"] ";
+				cout << seq1[i-1] <<" - " << seq2[j-1];
+				cout <<":["<< s[i][j] <<"] ";
 							
 			j++;
 		}
@@ -144,26 +144,27 @@ void pairAlign(char *seq1, char *seq2, int size1, int size2){
 		i++;
 	}
 
-	j=size2;
-
-
-	//traceback
-	int prev_i=-1;
-	int prev_j=-1;
-	int prev_val=-1;
 	
+	int rows =  sizeof s / sizeof s[0]; 
+	int cols = sizeof s[0] / sizeof(int); 
+
+	j=cols-1;
+	//traceback
 	bool gap1=false;
 	bool gap2=false;
-	while(j>0){
+	bool first_run=true;
+	int z=3;
+	cout << j << endl;
+	while(i!=0 && j!=0){
 		//getMax
-		int k=0;
-		int max=0;
+		int k=1;
+		int max=-100000000;
 		int max_i=0;
-		string s1_i;
-		string s2_j;
+		
+		//cout << "[" << i << ", " << j << "]" <<endl;
 
-		if(j==size2){
-			while (k<size1){
+		if(first_run){
+			while (k<(rows)){
 				if(s[k][j] >= max){
 					max=s[k][j];
 					max_i=k;
@@ -172,82 +173,46 @@ void pairAlign(char *seq1, char *seq2, int size1, int size2){
 			}
 
 			i=max_i;
-		
-			/*s1_i+=seq1[i-1];
-			s2_j+=seq2[j-1];
-			
-			seq1_align.insert(0,s1_i);
-			seq2_align.insert(0,s2_j);*/
+			string s1_i;
+			string s2_j;
+			cout << "I: " << i << endl;
 		}
-		cout << "Prev i: " << prev_i << " - " << "Current i: " << i << endl;
-		cout << "Prev j: " << prev_j << " - " << "Current j: " << j << endl;
-
-		if(gap1){
-			seq1_align.insert(0,"-");
-			s2_j+=seq2[j-1];
-			seq2_align.insert(0,s2_j);
-		}
-		else if(gap2){
-			s1_i+=seq1[i-1];
-			seq1_align.insert(0,s1_i);
-			seq2_align.insert(0,"-");
-		}else{
-			//if(j!=size2){
-				s1_i+=seq1[i-1];
-				s2_j+=seq2[j-1];
+			first_run=false;
+			gap1=false;
+			gap2=false;
+			//check neighbors
+			int neigh_up=s[i-1][j];
+			int neigh_left=s[i][j-1];
+			int neigh_diag=s[i-1][j-1];
+			int max_neigh=getMax2D(neigh_up,neigh_left,neigh_diag);
+			cout << "Max Neigh: " << max_neigh << endl;
+			cout << "Neigh Left: " << neigh_left << endl;
+			cout << "Neigh Diag: " << neigh_diag << endl;
+			cout << "Neigh Up: " << neigh_up << endl;
+			if(max_neigh==neigh_diag){
+				i-=1;
+				j-=1;
+				gap1=false;
+				gap2=false;
+			}
+			else if(max_neigh==neigh_up){
+				//add gap to seq 2
+				i-=1;
+				cout << "here" << endl;
+				gap2=true;
+				gap1=false;
 				
-				seq1_align.insert(0,s1_i);
-				seq2_align.insert(0,s2_j);
-			//}
-		}
-
-		prev_i=i;
-		prev_j=j;
-		prev_val=s[i][j];	
-		gap1=false;
-		gap2=false;
-		//check neighbors
-		int neigh_up=s[i-1][j];
-		int neigh_left=s[i][j-1];
-		int neigh_diag=s[i-1][j-1];
-		int max_neigh=getMax2D(neigh_up,neigh_left,neigh_diag);
-		cout << "Max Neigh: " << max_neigh << endl;
-		cout << "Neigh Left: " << neigh_left << endl;
-		cout << "Neigh Diag: " << neigh_diag << endl;
-		cout << "Neigh Up: " << neigh_up << endl;
-		if(max_neigh==neigh_diag){
-			i-=1;
-			j-=1;
-			gap1=false;
-			gap2=false;
-		}
-		else if(max_neigh==neigh_up){
-			//add gap to seq 2
-			i-=1;
-			cout << "here" << endl;
-			gap2=true;
-			gap1=false;
-			
-		}
-		else if(max_neigh==neigh_left){
-			//add gap
-			cout << "here2" << endl;
-			j-=1;
-			gap1=true;
-			gap2=false;
-		}
-		
-		prev_i=i;
-		prev_j=j;
-		prev_val=s[i][j];	
-		
-		cout << "[i,j]: " << i << "," << j << endl;
-		cout << seq1_align << endl;
-		cout << seq2_align << endl;
+			}
+			else if(max_neigh==neigh_left){
+				//add gap
+				cout << "here2" << endl;
+				j-=1;
+				gap1=true;
+				gap2=false;
+			}
 
 	}
-	
-	cout << "FINAL" << endl;
+
 	cout << seq1_align << endl;
 	cout << seq2_align << endl;
 
