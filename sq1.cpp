@@ -153,8 +153,7 @@ void pairAlign(char *seq1, char *seq2, int size1, int size2){
 	bool gap1=false;
 	bool gap2=false;
 	bool first_run=true;
-	int z=3;
-	cout << j << endl;
+
 	while(i!=0 && j!=0){
 		//getMax
 		int k=1;
@@ -163,8 +162,6 @@ void pairAlign(char *seq1, char *seq2, int size1, int size2){
 		string s1_i;
 		string s2_j;
 		
-		//cout << "[" << i << ", " << j << "]" <<endl;
-
 		if(first_run){
 			while (k<(rows)){
 				if(s[k][j] >= max){
@@ -175,8 +172,6 @@ void pairAlign(char *seq1, char *seq2, int size1, int size2){
 			}
 
 			i=max_i;
-
-			cout << "I: " << i << endl;
 		}
 		
 			if((!gap1 && !gap2)){
@@ -206,10 +201,6 @@ void pairAlign(char *seq1, char *seq2, int size1, int size2){
 			int neigh_left=s[i][j-1];
 			int neigh_diag=s[i-1][j-1];
 			int max_neigh=getMax2D(neigh_up,neigh_left,neigh_diag);
-			cout << "Max Neigh: " << max_neigh << endl;
-			cout << "Neigh Left: " << neigh_left << endl;
-			cout << "Neigh Diag: " << neigh_diag << endl;
-			cout << "Neigh Up: " << neigh_up << endl;
 			if(max_neigh==neigh_diag){
 				i-=1;
 				j-=1;
@@ -219,14 +210,12 @@ void pairAlign(char *seq1, char *seq2, int size1, int size2){
 			else if(max_neigh==neigh_up){
 				//add gap to seq 2
 				i-=1;
-				cout << "here" << endl;
 				gap2=true;
 				gap1=false;
 				
 			}
 			else if(max_neigh==neigh_left){
-				//add gap
-				cout << "here2" << endl;
+				//add gap to seq 1
 				j-=1;
 				gap1=true;
 				gap2=false;
