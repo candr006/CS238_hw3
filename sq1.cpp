@@ -230,9 +230,43 @@ int pairAlign(char *seq1, char *seq2, int size1, int size2){
 }
 
 
-void threeSeqAlign(char s1[], char s2[], char s3[]){
 
+int getScore3D(char s1, char s2, char s3){
+	int p1=getScore(s1,s2);
+	int p2=getScore(s2,s3);
+	int p3=getScore(s1,s3);
 	
+	return (p1+p2+p3);
+}
+
+
+int getMax3D(int v1, int v2, int v3, int v4, int v5, int v6, int v7){
+	int m1=getMax2D(v1,v2,v3);
+	int m2=getMax2D(v4,v5,v6);
+	int m3=getMax2D(m1,m2,v7);
+	
+	return m3;
+}
+
+
+void threeSeqAlign(char s1[], char s2[], char s3[], int size1, int size2, int size3){
+	int s[size1][size2][size3];
+	
+	for(int i=1; i<size1; i++){
+		for(int j=1; j<size2; j++){
+			for(int k=1; k<size3; k++){
+
+				s[i][j][k]=getMax3D((s[i-1][j][k]+ getScore3D(s1[i],'-','-')),
+									(s[i][j-1][k]+ getScore3D('-',s2[j],'-')),
+									(s[i][j][k-1]+ getScore3D('-','-',s3[k])),
+									(s[i-1][j-1][k]+ getScore3D(s1[i],s2[j],'-')),
+									(s[i-1][j][k-1]+ getScore3D(s1[i],'-',s3[k])),
+									(s[i][j-1][k-1]+ getScore3D('-',s2[j],s3[k])),
+									(s[i-1][j-1][k-1]+ getScore3D(s1[i],s2[j],s3[k]))
+									);
+			}
+		}
+	}
 	
 	return;
 }
