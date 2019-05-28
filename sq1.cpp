@@ -252,6 +252,13 @@ int getMax3D(int v1, int v2, int v3, int v4, int v5, int v6, int v7){
 void threeSeqAlign(char s1[], char s2[], char s3[], int size1, int size2, int size3){
 	int s[size1][size2][size3];
 	
+	//initialization
+	for(int j=0; j< size2; j++){
+		for(int k=0; k<size3; k++){
+			s[0][j][k]=pairAlign(s2[j],s3[k]);
+		}
+	}
+	
 	for(int i=1; i<size1; i++){
 		for(int j=1; j<size2; j++){
 			for(int k=1; k<size3; k++){
