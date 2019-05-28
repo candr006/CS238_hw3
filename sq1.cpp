@@ -154,6 +154,7 @@ int pairAlign(char *seq1, char *seq2, int size1, int size2){
 		string s2_j;
 		
 		if(first_run){
+			//start at the max value in the last column
 			while (k<(rows)){
 				if(s[k][j] >= max){
 					max=s[k][j];
@@ -195,7 +196,7 @@ int pairAlign(char *seq1, char *seq2, int size1, int size2){
 			first_run=false;
 			gap1=false;
 			gap2=false;
-			//check neighbors
+			//update pointers to max value neighbor
 			int neigh_up=s[i-1][j];
 			int neigh_left=s[i][j-1];
 			int neigh_diag=s[i-1][j-1];
@@ -249,8 +250,15 @@ int getMax3D(int v1, int v2, int v3, int v4, int v5, int v6, int v7){
 }
 
 
-void threeSeqAlign(char s1[], char s2[], char s3[], int size1, int size2, int size3){
+
+int threeSeqAlign(char s1[], char s2[], char s3[], int size1, int size2, int size3){
 	int s[size1][size2][size3];
+	int score=0;
+	
+	cout << "s1-" << size1 <<": "<< s1 << endl;
+	cout << "s2-" << size2 <<": "<< s2 << endl;
+	cout << "s3-" << size3 <<": "<< s3 << endl;
+	
 	
 	//initialization
 	for(int j=0; j< size2; j++){
@@ -271,23 +279,74 @@ void threeSeqAlign(char s1[], char s2[], char s3[], int size1, int size2, int si
 		}
 	}
 	
-	for(int i=1; i<size1; i++){
-		for(int j=1; j<size2; j++){
-			for(int k=1; k<size3; k++){
-
-				s[i][j][k]=getMax3D((s[i-1][j][k]+ getScore3D(s1[i],'-','-')),
-									(s[i][j-1][k]+ getScore3D('-',s2[j],'-')),
-									(s[i][j][k-1]+ getScore3D('-','-',s3[k])),
-									(s[i-1][j-1][k]+ getScore3D(s1[i],s2[j],'-')),
-									(s[i-1][j][k-1]+ getScore3D(s1[i],'-',s3[k])),
-									(s[i][j-1][k-1]+ getScore3D('-',s2[j],s3[k])),
-									(s[i-1][j-1][k-1]+ getScore3D(s1[i],s2[j],s3[k]))
-									);
-			}
+	//break into halves for Divide and Conquer
+	int s1_half=size1/2;
+	char s1_first[s1_half];
+	char s1_second[size1-s1_half];
+	int k=0;
+	for(int i=0; i< size1; i++){
+		if(i<s1_half){
+			s1_first[i]=s1[i];
+		}else{
+			s1_second[k]=s1[i];
+			k++;
+		}
+	}
+	int s2_half=size2/2;
+	char s2_first[s2_half];
+	char s2_second[size2-s2_half];
+	k=0;
+	for(int i=0; i< size2; i++){
+		if(i<s2_half){
+			s2_first[i]=s2[i];
+		}else{
+			s2_second[k]=s2[i];
+			k++;
+		}
+	}
+	int s3_half=size3/2;
+	char s3_first[s3_half];
+	char s3_second[size3-s3_half];
+	k=0;
+	for(int i=0; i< size3; i++){
+		if(i<s3_half){
+			s3_first[i]=s3[i];
+		}else{
+			s3_second[k]=s3[i];
+			k++;
 		}
 	}
 	
-	return;
+	if(size1<2 || size2<2 || size3<2){
+	// if you can't divide sequences further, make dp table
+		for(int i=1; i<size1; i++){
+			for(int j=1; j<size2; j++){
+				for(int k=1; k<size3; k++){
+
+					s[i][j][k]=getMax3D((s[i-1][j][k]+ getScore3D(s1[i],'-','-')),
+										(s[i][j-1][k]+ getScore3D('-',s2[j],'-')),
+										(s[i][j][k-1]+ getScore3D('-','-',s3[k])),
+										(s[i-1][j-1][k]+ getScore3D(s1[i],s2[j],'-')),
+										(s[i-1][j][k-1]+ getScore3D(s1[i],'-',s3[k])),
+										(s[i][j-1][k-1]+ getScore3D('-',s2[j],s3[k])),
+										(s[i-1][j-1][k-1]+ getScore3D(s1[i],s2[j],s3[k]))
+										);
+				}
+			}
+		}
+		return score;
+	}
+	
+	//Recursively call on first half
+	threeSeqAlign(s1_first, s2_first, s3_first, sizeof(s1_first), sizeof(s2_first), sizeof(s3_first));
+	cout << "first half complete" << endl;
+	//Recursively call on second half
+	threeSeqAlign(s1_second, s2_second, s3_second, sizeof(s1_second), sizeof(s2_second), sizeof(s3_second));
+	cout << "second complete" << endl;
+	
+
+	
+	return score;
 }
 
 int main(int argc, char** argv){
@@ -319,5 +378,5 @@ int main(int argc, char** argv){
 	strcpy(s3, s3_t.c_str());
 	size_seq3=sizeof(s3);
 
-	int p = pairAlign(s1,s2, sizeof(s1), sizeof(s2));
+	threeSeqAlign(s1,s2, s3, sizeof(s1), sizeof(s2), sizeof(s3));
 }
