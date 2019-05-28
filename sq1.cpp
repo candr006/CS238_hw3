@@ -255,7 +255,19 @@ void threeSeqAlign(char s1[], char s2[], char s3[], int size1, int size2, int si
 	//initialization
 	for(int j=0; j< size2; j++){
 		for(int k=0; k<size3; k++){
-			s[0][j][k]=pairAlign(s2[j],s3[k]);
+			s[0][j][k]=pairAlign(s2,s3, size2, size3);
+		}
+	}
+	
+	for(int i=0; i< size1; i++){
+		for(int k=0; k<size3; k++){
+			s[i][0][k]=pairAlign(s1,s3, size1, size3);
+		}
+	}
+	
+	for(int i=0; i< size1; i++){
+		for(int j=0; j<size2; j++){
+			s[i][j][0]=pairAlign(s1,s2, size1, size2);
 		}
 	}
 	
