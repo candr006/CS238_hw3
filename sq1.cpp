@@ -94,35 +94,27 @@ int getMaxIndex2D(int **s, int col, int size){
 	return max_i;
 }
 
-void pairAlign(char *seq1, char *seq2, int size1, int size2){
+//returns the score of the alignment
+int pairAlign(char *seq1, char *seq2, int size1, int size2){
 	gap_locations2D.clear();
-	//seq1_align="";
-	//seq2_align="";
-	cout << "seq1 size: " << size1 << endl;
-	cout << "seq2 size: " << size2 << endl;
+	int score=0; 
 	
 	int s[size1][size2];
-	
-	//cout << "first row" << endl;
 	for(int i=0; i< size2; i++){
 		if(i==0)
 			s[0][i]=0;
 		else{
 			s[0][i]=((i)*indel);
 		}
-		//cout << s[0][i] << ",";
 	}
-	cout <<endl;
-	//cout << "first col" << endl;
+
 	for(int j=0; j<size1;j++){
 		if(j==0)
 			s[j][0]=0;
 		else{
 			s[j][0]=((j)*indel);
 		}
-		//cout << s[j][0] << ",";
 	}
-	cout <<endl;
 	int i=1;
 	int j=1;
 
@@ -135,12 +127,11 @@ void pairAlign(char *seq1, char *seq2, int size1, int size2){
 					s[i][j-1]+getScore('-',seq2[j-1]),
 					s[i-1][j-1]+getScore(seq1[i-1],seq2[j-1]));
 			
-				cout << seq1[i-1] <<" - " << seq2[j-1];
-				cout <<":["<< s[i][j] <<"] ";
+				//cout << seq1[i-1] <<" - " << seq2[j-1];
+				//cout <<":["<< s[i][j] <<"] ";
 							
 			j++;
 		}
-		cout << endl;
 		i++;
 	}
 
@@ -178,18 +169,26 @@ void pairAlign(char *seq1, char *seq2, int size1, int size2){
 					s1_i+=seq1[i-1];
 					s2_j+=seq2[j-1];
 					
+					if(s1_i==s2_j){
+						score+=match;
+					}else{
+						score+=mismtch;
+					}
+					
 					seq1_align.insert(0,s1_i);
 					seq2_align.insert(0,s2_j);
-				}
+			}
 			else if(gap1){
 				seq1_align.insert(0,"-");
 				s2_j+=seq2[j-1];
 				seq2_align.insert(0,s2_j);
+				score+=indel;
 			}
 			else if(gap2){
 				s1_i+=seq1[i-1];
 				seq1_align.insert(0,s1_i);
 				seq2_align.insert(0,"-");
+				score+=indel;
 			}
 			
 			
@@ -223,8 +222,10 @@ void pairAlign(char *seq1, char *seq2, int size1, int size2){
 
 	}
 
-	cout << seq1_align << endl;
-	cout << seq2_align << endl;
+	//cout << seq1_align << endl;
+	//cout << seq2_align << endl;
+	
+	return score;
 
 }
 
@@ -264,8 +265,6 @@ int main(int argc, char** argv){
     char s3[s3_t.length()+1]; 
 	strcpy(s3, s3_t.c_str());
 	size_seq3=sizeof(s3);
-	cout << "s1: " << s1 << endl;
-	cout << "s2: " << s2 << endl;
-	pairAlign(s1,s2, sizeof(s1), sizeof(s2));
-	
+
+	int p = pairAlign(s1,s2, sizeof(s1), sizeof(s2));
 }
