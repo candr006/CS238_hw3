@@ -11,9 +11,9 @@
 using namespace std;
 
 //set the constant values here 
-int match=1;
-int mismtch=-1;
-int indel=-2;
+int match=5;
+int mismtch=-4;
+int indel=-8;
 
 int size_seq1=0;
 int size_seq2=0;
@@ -127,12 +127,13 @@ int pairAlign(char *seq1, char *seq2, int size1, int size2){
 					s[i][j-1]+getScore('-',seq2[j-1]),
 					s[i-1][j-1]+getScore(seq1[i-1],seq2[j-1]));
 			
-				//cout << seq1[i-1] <<" - " << seq2[j-1];
-				//cout <<":["<< s[i][j] <<"] ";
+				cout << seq1[i-1] <<" - " << seq2[j-1];
+				cout <<":["<< s[i][j] <<"] ";
 							
 			j++;
 		}
 		i++;
+		cout <<endl;
 	}
 
 	
@@ -164,7 +165,21 @@ int pairAlign(char *seq1, char *seq2, int size1, int size2){
 			}
 
 			i=max_i;
+			if(i!=(size1-1)){
+				int diff=(size1-1)-i;
+				k=1;
+				//add gaps to seq 2 here
+				while (diff>0){
+					s1_i+=seq1[size1-k];
+					seq1_align.insert(0,s1_i);
+					seq2_align.insert(0,"-");
+					diff--;
+					k++;
+					score+=indel;
+				}
+			}
 		}
+		s1_i="";
 		
 			if((!gap1 && !gap2)){
 					s1_i+=seq1[i-1];
@@ -223,8 +238,8 @@ int pairAlign(char *seq1, char *seq2, int size1, int size2){
 
 	}
 
-	//cout << seq1_align << endl;
-	//cout << seq2_align << endl;
+	cout << seq1_align << endl;
+	cout << seq2_align << endl;
 	
 	return score;
 
@@ -334,6 +349,7 @@ int threeSeqAlign(char s1[], char s2[], char s3[], int size1, int size2, int siz
 				}
 			}
 		}
+		cout << "Finished s" << endl;
 		return score;
 	}
 	
@@ -378,5 +394,9 @@ int main(int argc, char** argv){
 	strcpy(s3, s3_t.c_str());
 	size_seq3=sizeof(s3);
 
-	threeSeqAlign(s1,s2, s3, sizeof(s1), sizeof(s2), sizeof(s3));
+	//threeSeqAlign(s1,s2, s3, sizeof(s1), sizeof(s2), sizeof(s3));
+	cout << "s1: " << s1;
+	cout << " s2: " << s2 << endl;
+	int x= pairAlign(s1,s2,sizeof(s1),sizeof(s2));
+	cout << x << endl;
 }
