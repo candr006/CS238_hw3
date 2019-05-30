@@ -99,6 +99,8 @@ int pairAlign(char *seq1, char *seq2, int size1, int size2){
 	gap_locations2D.clear();
 	int score=0; 
 	
+	//cout << "PAIR ALIGN" << seq1 << " - " << seq2 << endl;
+	
 	int s[size1][size2];
 	for(int i=0; i< size2; i++){
 		if(i==0)
@@ -265,18 +267,16 @@ int getMax3D(int v1, int v2, int v3, int v4, int v5, int v6, int v7){
 }
 
 
-
+string seq1_align_3d="";
+string seq2_align_3d="";
+string seq3_align_3d="";
+int score=0;
 int threeSeqAlign(char s1[], char s2[], char s3[], int size1, int size2, int size3){
 	int s[size1][size2][size3];
-	int score=0;
 
-	string seq1_align="";
-	string seq2_align="";
-	string seq3_align="";
-	
-	cout << "s1-" << size1 <<": "<< s1 << endl;
-	cout << "s2-" << size2 <<": "<< s2 << endl;
-	cout << "s3-" << size3 <<": "<< s3 << endl;
+	//cout << "s1-" << size1 <<": "<< s1 << endl;
+	//cout << "s2-" << size2 <<": "<< s2 << endl;
+	//cout << "s3-" << size3 <<": "<< s3 << endl;
 	
 	
 	//initialization
@@ -336,7 +336,9 @@ int threeSeqAlign(char s1[], char s2[], char s3[], int size1, int size2, int siz
 		}
 	}
 	
-	if(size1<2 || size2<2 || size3<2){
+	
+		
+	if((size1)<=1 ||(size2)<=1 || (size3)<=1){
 	// if you can't divide sequences further, make dp table
 		for(int i=1; i<size1; i++){
 			for(int j=1; j<size2; j++){
@@ -353,194 +355,45 @@ int threeSeqAlign(char s1[], char s2[], char s3[], int size1, int size2, int siz
 				}
 			}
 		}
-		cout << "Finished s" << endl;
 
 
 
 		//traceback
-		int i=size1-1;
-		int j=size2-1;
-		int k=size3-1;
 		
+		char s1_comp = (s1[0] != '\0')?s1[0]:'-';
+		char s2_comp = (s2[0] != '\0')?s2[0]:'-';
+		char s3_comp = (s3[0] != '\0')?s3[0]:'-';
+		
+		cout << "s1- " <<size1 << ": " << s1 << endl;
+		cout << "s2- " <<size2 << ": " << s2 << endl;
+		cout << "s3- " <<size3 << ": " << s3 << endl;
 
-
-		while(i>0 || j>0 || k>0){
-			if(i==0 && j==0){
-				seq1_align.insert(0,"-");
-				seq2_align.insert(0,"-");
-				string s3k;
-				s3k+=s3[k-1];
-				seq3_align.insert(0,s3k);
-				score+=(2*indel);
-				k--;
-			}
-			else if (i == 0 && k == 0) {
-			    seq1_align.insert(0,"-");
-			    string s2j;
-			    s2j+=s2[j-1];
-			    seq2_align.insert(0,s2j);
-			    seq3_align.insert(0,"-");
-			    score+=(2*indel);
-			    j--;
-			}
-			else if (j == 0 && k == 0) {
-			    string s1i;
-			    s1i+=s1[i-1];
-			    seq1_align.insert(0,s1i);
-			    seq2_align.insert(0,"-");
-			    seq3_align.insert(0,"-");
-			    score+=(2*indel);
-			    i--;
-			}
-			else if (i == 0) {
-			    seq1_align.insert(0,"-");
-			    string s2j;
-			    s2j+=s2[j-1];
-			    seq2_align.insert(0,s2j);
-			    string s3k;
-			    s3k+=s3[k-1];
-			    seq3_align.insert(0,s3k);
-
-			    score+=(2*indel);
-			    score+=((s3k==s2j)?match:mismtch);
-			    j--;
-			    k--;
-			}
-			else if (j == 0) {
-			    string s1i;
-			    s1i+=s1[i-1];
-			    seq1_align.insert(0,s1i);
-			    seq2_align.insert(0,"-");
-			    string s3k;
-			    s3k+=s3[k-1];
-			    seq3_align.insert(0,s3k);
-
-			    score+=(2*indel);
-			    score+=((s1i==s3k)?match:mismtch);
-			    i--;
-			    k--;
-			}
-			else if (k == 0) {
-			    string s1i;
-			    s1i+=s1[i-1];
-			    seq1_align.insert(0,s1i);
-			    string s2j;
-			    s2j+=s2[j-1];
-			    seq2_align.insert(0,s2j);
-			    seq3_align.insert(0,"-");
-
-			    score+=(2*indel);
-			    score+=((s1i==s2j)?match:mismtch);
-			    i--;
-			    j--;
-			}
-
-			else if (i>0 && j>0 && k>0) {
-			    string s1i;
-			    s1i+=s1[i-1];
-			    seq1_align.insert(0,s1i);
-			    string s2j;
-			    s2j+=s2[j-1];
-			    seq2_align.insert(0,s2j);
-			    string s3k;
-			    s3k+=s3[k-1];
-			    seq3_align.insert(0,s3k);
-
-			    score+=((s1i==s2j)?match:mismtch);
-			    score+=((s1i==s3k)?match:mismtch);
-			    score+=((s2j==s3k)?match:mismtch);
-			    --i; --j; --k;
-			}
-			else if (i>0 && j>0 && k==0) {
-			    string s1i;
-			    s1i+=s1[i-1];
-			    seq1_align.insert(0,s1i);
-			    string s2j;
-			    s2j+=s2[j-1];
-			    seq2_align.insert(0,s2j);
-			    seq3_align.insert(0,"-");
-
-			    score+=(2*indel);
-			    score+=((s1i==s2j)?match:mismtch);			    
-			    --i; --j;
-			}
-			else if (i>0 && j==0 && k>0) {
-			    string s1i;
-			    s1i+=s1[i-1];
-			    seq1_align.insert(0,s1i);
-			    seq2_align.insert(0,"-");
-			    string s3k;
-			    s3k+=s3[k-1];
-			    seq3_align.insert(0,s3k);
-
-			    score+=(2*indel);
-			    score+=((s1i==s3k)?match:mismtch);
-			    --i; --k;
-			}
-			else if (i==0 && j>0 && k==0) {
-			    seq1_align.insert(0,"-");
-			    string s2j;
-			    s2j+=s2[j-1];
-			    seq2_align.insert(0,s2j);
-			    string s3k;
-			    s3k+=s3[k-1];
-			    seq3_align.insert(0,s3k);
-
-			    score+=(2*indel);
-			    score+=((s3k==s2j)?match:mismtch);
-			    --j; --k;
-			}
-			else if (i>0 && j==0 && k==0) {
-			    string s1i;
-			    s1i+=s1[i-1];
-			    seq1_align.insert(0,s1i);
-			    seq2_align.insert(0,"-");
-			    seq3_align.insert(0,"-");
-			    score+=(2*indel);
-			    --i;
-			}
-			else if (i>0 && j>0 && k==0) {
-			    seq1_align.insert(0,"-");
-			    string s2j;
-			    s2j+=s2[j-1];
-			    seq2_align.insert(0,s2j);
-			    seq3_align.insert(0,"-");
-			    score+=(2*indel);
-			    --j;
-			}
-			else if (i>0 && j==0 && k>0) {
-			    seq1_align.insert(0,"-");
-			    seq2_align.insert(0,"-");
-			    string s3k;
-			    s3k+=s3[k-1];
-			    seq3_align.insert(0,s3k);
-			    score+=(2*indel);
-			    --k;
-			}
-
-				
-
-
-		}
-
-
+		score+=getScore3D(s1_comp,s2_comp,s3_comp);
+		
+		seq1_align_3d+=s1_comp;
+		seq2_align_3d+=s2_comp;
+		seq3_align_3d+=s3_comp;
+		
+		cout << "------------------------------------------" << endl;
+		cout << "ALIGNMENT: " << endl;
+		cout << seq1_align_3d << endl;
+		cout << seq2_align_3d << endl;
+		cout << seq3_align_3d << endl;
+		
+		cout << "SCORE: " << score << endl;
+		
 		return score;
 	}
 	
+
+	
 	//Recursively call on first half
-	threeSeqAlign(s1_first, s2_first, s3_first, sizeof(s1_first), sizeof(s2_first), sizeof(s3_first));
-		cout << seq1_align << endl;
-		cout << seq2_align << endl;
-		cout << seq3_align << endl;
+	int score_first = threeSeqAlign(s1_first, s2_first, s3_first, sizeof(s1_first), sizeof(s2_first), sizeof(s3_first));
 
 	//Recursively call on second half
-	threeSeqAlign(s1_second, s2_second, s3_second, sizeof(s1_second), sizeof(s2_second), sizeof(s3_second));
-
-		cout << seq1_align << endl;
-		cout << seq2_align << endl;
-		cout << seq3_align << endl;
+	int score_second = threeSeqAlign(s1_second, s2_second, s3_second, sizeof(s1_second), sizeof(s2_second), sizeof(s3_second));
 	
-
+	score=score_first+score_second;
 	
 	return score;
 }
@@ -574,8 +427,11 @@ int main(int argc, char** argv){
 	strcpy(s3, s3_t.c_str());
 	size_seq3=sizeof(s3);
 
+	cout << "s1: " << s1 << endl;
+	cout << "s2: " << s2 << endl;
+	cout << "s3: " << s3 << endl;
+	
 	threeSeqAlign(s1,s2, s3, sizeof(s1), sizeof(s2), sizeof(s3));
-	//cout << "s1: " << s1;
-	//cout << " s2: " << s2 << endl;
+
 
 }
