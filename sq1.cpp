@@ -368,6 +368,8 @@ int threeSeqAlign(char s1[], char s2[], char s3[], int size1, int size2, int siz
 
 
 		while(i>0 || j>0 || k>0){
+
+		cout << "----------------------ALIGNMENT-------------------------" << endl;
 			cout << "s["<< i <<","<< j <<","<< k <<"]: ";
 			if(i==0 && j==0){
 				cout << "if 1" << endl;
@@ -544,7 +546,6 @@ cout << "if 13" << endl;
 		}
 
 
-		cout << "----------------------ALIGNMENT-------------------------" << endl;
 		s1temp+=seq1_align_3d;
 		s2temp+=seq2_align_3d;
 		s3temp+=seq3_align_3d;
