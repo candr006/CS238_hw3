@@ -7,6 +7,7 @@
 #include <algorithm>   
 #include <utility> 
 #include <map>
+#include <chrono>
 
 using namespace std;
 
@@ -15,7 +16,7 @@ int match=5;
 int mismtch=-4;
 int indel=-8;
 
-int base_case_size=3;
+int base_case_size=2;
 
 int size_seq1=0;
 int size_seq2=0;
@@ -80,11 +81,9 @@ int getMaxIndex2D(int **s, int col, int size){
 	return max_i;
 }
 
-//returns the score of the alignment
+//pairwise alignment returns the score of the alignment
 pair<int,string> pairAlign(char *seq1, char *seq2, int size1, int size2){
 	int score=0; 
-	
-	//cout << "PAIR ALIGN" << seq1 << " - " << seq2 << endl;
 	
 	int s[size1][size2];
 	for(int i=0; i< size2; i++){
@@ -113,14 +112,10 @@ pair<int,string> pairAlign(char *seq1, char *seq2, int size1, int size2){
 			s[i][j]=getMax2D(s[i-1][j]+getScore(seq1[i-1],'-'),
 					s[i][j-1]+getScore('-',seq2[j-1]),
 					s[i-1][j-1]+getScore(seq1[i-1],seq2[j-1]));
-			
-				//cout << seq1[i-1] <<" - " << seq2[j-1];
-				//cout <<":["<< s[i][j] <<"] ";
 							
 			j++;
 		}
 		i++;
-		//cout <<endl;
 	}
 
 	
@@ -168,60 +163,60 @@ pair<int,string> pairAlign(char *seq1, char *seq2, int size1, int size2){
 		}
 		s1_i="";
 		
-			if((!gap1 && !gap2)){
-					s1_i+=seq1[i-1];
-					s2_j+=seq2[j-1];
-					
-					if(s1_i==s2_j){
-						score+=match;
-					}else{
-						score+=mismtch;
-					}
-					
-					seq1_align.insert(0,s1_i);
-					seq2_align.insert(0,s2_j);
-			}
-			else if(gap1){
-				seq1_align.insert(0,"-");
-				s2_j+=seq2[j-1];
-				seq2_align.insert(0,s2_j);
-				score+=indel;
-			}
-			else if(gap2){
+		if((!gap1 && !gap2)){
 				s1_i+=seq1[i-1];
+				s2_j+=seq2[j-1];
+				
+				if(s1_i==s2_j){
+					score+=match;
+				}else{
+					score+=mismtch;
+				}
+				
 				seq1_align.insert(0,s1_i);
-				seq2_align.insert(0,"-");
-				score+=indel;
-			}
-			
-			
-			first_run=false;
+				seq2_align.insert(0,s2_j);
+		}
+		else if(gap1){
+			seq1_align.insert(0,"-");
+			s2_j+=seq2[j-1];
+			seq2_align.insert(0,s2_j);
+			score+=indel;
+		}
+		else if(gap2){
+			s1_i+=seq1[i-1];
+			seq1_align.insert(0,s1_i);
+			seq2_align.insert(0,"-");
+			score+=indel;
+		}
+		
+		
+		first_run=false;
+		gap1=false;
+		gap2=false;
+		//update pointers to max value neighbor
+		int neigh_up=s[i-1][j];
+		int neigh_left=s[i][j-1];
+		int neigh_diag=s[i-1][j-1];
+		int max_neigh=getMax2D(neigh_up,neigh_left,neigh_diag);
+		if(max_neigh==neigh_diag){
+			i-=1;
+			j-=1;
 			gap1=false;
 			gap2=false;
-			//update pointers to max value neighbor
-			int neigh_up=s[i-1][j];
-			int neigh_left=s[i][j-1];
-			int neigh_diag=s[i-1][j-1];
-			int max_neigh=getMax2D(neigh_up,neigh_left,neigh_diag);
-			if(max_neigh==neigh_diag){
-				i-=1;
-				j-=1;
-				gap1=false;
-				gap2=false;
-			}
-			else if(max_neigh==neigh_up){
-				//add gap to seq 2
-				i-=1;
-				gap2=true;
-				gap1=false;
-				
-			}
-			else if(max_neigh==neigh_left){
-				//add gap to seq 1
-				j-=1;
-				gap1=true;
-				gap2=false;
-			}
+		}
+		else if(max_neigh==neigh_up){
+			//add gap to seq 2
+			i-=1;
+			gap2=true;
+			gap1=false;
+			
+		}
+		else if(max_neigh==neigh_left){
+			//add gap to seq 1
+			j-=1;
+			gap1=true;
+			gap2=false;
+		}
 
 	}
 
@@ -233,7 +228,7 @@ pair<int,string> pairAlign(char *seq1, char *seq2, int size1, int size2){
 }
 
 
-
+//calculate score of 3 seq
 int getScore3D(char s1, char s2, char s3){
 	int p1=getScore(s1,s2);
 	int p2=getScore(s2,s3);
@@ -242,7 +237,7 @@ int getScore3D(char s1, char s2, char s3){
 	return (p1+p2+p3);
 }
 
-
+//find the max among the neighbors in 3D
 int getMax3D(int v1, int v2, int v3, int v4, int v5, int v6, int v7){
 	int m1=getMax2D(v1,v2,v3);
 	int m2=getMax2D(v4,v5,v6);
@@ -251,6 +246,7 @@ int getMax3D(int v1, int v2, int v3, int v4, int v5, int v6, int v7){
 	return m3;
 }
 
+//helper function that gets the first or second half of a string
 string getPart(string s, string delimiter, int part){
 	int found = s.find(delimiter);
 	if(part==1){
@@ -260,44 +256,20 @@ string getPart(string s, string delimiter, int part){
 	}
 }
 
+//global alignment and score variables
 string s1temp="";
 string s2temp="";
 string s3temp="";
-int score=0;
+int score_overall=0;
+int perfectly_matched=0;
 int threeSeqAlign(char s1[], char s2[], char s3[], int size1, int size2, int size3){
-	int s[size1][size2][size3];
+
 	string seq1_align_3d="";
 	string seq2_align_3d="";
 	string seq3_align_3d="";
-
-	//cout << "s1-" << size1 <<": "<< s1 << endl;
-	//cout << "s2-" << size2 <<": "<< s2 << endl;
-	//cout << "s3-" << size3 <<": "<< s3 << endl;
+	int score=0;
 	
-	
-	//----initialization of 3D dp table----
-	for(int j=0; j< size2; j++){
-		for(int k=0; k<size3; k++){
-			pair<int, string> p=pairAlign(s2,s3, size2, size3);
-			s[0][j][k]=p.first;
-		}
-	}
-	
-	for(int i=0; i< size1; i++){
-		for(int k=0; k<size3; k++){
-			pair<int, string> p=pairAlign(s2,s3, size2, size3);
-			s[i][0][k]=p.first;
-		}
-	}
-	
-	for(int i=0; i< size1; i++){
-		for(int j=0; j<size2; j++){
-			pair<int, string> p=pairAlign(s2,s3, size2, size3);
-			s[i][j][0]=p.first;
-		}
-	}
-	
-	//break into halves for Divide and Conquer
+	//break the sequences halves for Divide and Conquer
 	int s1_half=size1/2;
 	char s1_first[s1_half];
 	char s1_second[size1-s1_half];
@@ -310,6 +282,7 @@ int threeSeqAlign(char s1[], char s2[], char s3[], int size1, int size2, int siz
 			k++;
 		}
 	}
+
 	int s2_half=size2/2;
 	char s2_first[s2_half];
 	char s2_second[size2-s2_half];
@@ -322,6 +295,8 @@ int threeSeqAlign(char s1[], char s2[], char s3[], int size1, int size2, int siz
 			k++;
 		}
 	}
+
+
 	int s3_half=size3/2;
 	char s3_first[s3_half];
 	char s3_second[size3-s3_half];
@@ -334,11 +309,34 @@ int threeSeqAlign(char s1[], char s2[], char s3[], int size1, int size2, int siz
 			k++;
 		}
 	}
-	
-	
-		
+
+	//check if base case size has been reached	
 	if(size1<base_case_size || size2<base_case_size || size3<base_case_size){
-	// if you can't divide sequences further, make dp table
+		int s[size1][size2][size3];
+		
+			//----initialization of 3D dp table----
+		for(int j=0; j< size2; j++){
+			for(int k=0; k<size3; k++){
+				pair<int, string> p=pairAlign(s2,s3, size2, size3);
+				s[0][j][k]=p.first;
+			}
+		}
+
+		for(int i=0; i< size1; i++){
+			for(int k=0; k<size3; k++){
+				pair<int, string> p=pairAlign(s2,s3, size2, size3);
+				s[i][0][k]=p.first;
+			}
+		}
+		
+
+		for(int i=0; i< size1; i++){
+			for(int j=0; j<size2; j++){
+				pair<int, string> p=pairAlign(s2,s3, size2, size3);
+				s[i][j][0]=p.first;
+			}
+		}
+		// if base case size had been reached, make DP table
 		for(int i=1; i<size1; i++){
 			for(int j=1; j<size2; j++){
 				for(int k=1; k<size3; k++){
@@ -354,55 +352,48 @@ int threeSeqAlign(char s1[], char s2[], char s3[], int size1, int size2, int siz
 				}
 			}
 		}
-		cout << "Finished s" << endl;
+
 		seq1_align_3d+=seq1_align_3d;
 		seq2_align_3d+=seq2_align_3d;
 		seq3_align_3d+=seq3_align_3d;
 
 
-		//traceback
+
 		int i=size1-1;
 		int j=size2-1;
 		int k=size3-1;
-		
-
 
 		while(i>0 || j>0 || k>0){
 
-		cout << "----------------------ALIGNMENT-------------------------" << endl;
-			cout << "s["<< i <<","<< j <<","<< k <<"]: ";
+		//construction of alignment and score
 			if(i==0 && j==0){
-				cout << "if 1" << endl;
 				seq1_align_3d.insert(0,"-");
 				seq2_align_3d.insert(0,"-");
 				string s3k;
 				s3k+=s3[k-1];
 				seq3_align_3d.insert(0,s3k);
-				score+=(2*indel);
+				score+=getScore3D('-','-',s3[k-1]);
 				k--;
 			}
 			else if (i == 0 && k == 0) {
-			    cout << "if 2" << endl;
 			    seq1_align_3d.insert(0,"-");
 			    string s2j;
 			    s2j+=s2[j-1];
 			    seq2_align_3d.insert(0,s2j);
 			    seq3_align_3d.insert(0,"-");
-			    score+=(2*indel);
+			    score+=getScore3D('-',s2[j-1],'-');
 			    j--;
 			}
 			else if (j == 0 && k == 0) {
-			    cout << "if 3" << endl;
 			    string s1i;
 			    s1i+=s1[i-1];
 			    seq1_align_3d.insert(0,s1i);
 			    seq2_align_3d.insert(0,"-");
 			    seq3_align_3d.insert(0,"-");
-			    score+=(2*indel);
+			    score+=getScore3D(s1[i-1],'-','-');
 			    i--;
 			}
 			else if (i == 0) {
-cout << "if 4" << endl;
 			    seq1_align_3d.insert(0,"-");
 			    string s2j;
 			    s2j+=s2[j-1];
@@ -411,13 +402,11 @@ cout << "if 4" << endl;
 			    s3k+=s3[k-1];
 			    seq3_align_3d.insert(0,s3k);
 
-			    score+=(2*indel);
-			    score+=((s3k==s2j)?match:mismtch);
+			    score+=getScore3D('-',s3[k-1],s2[j-1]);
 			    j--;
 			    k--;
 			}
 			else if (j == 0) {
-cout << "if 5" << endl;
 			    string s1i;
 			    s1i+=s1[i-1];
 			    seq1_align_3d.insert(0,s1i);
@@ -425,14 +414,12 @@ cout << "if 5" << endl;
 			    string s3k;
 			    s3k+=s3[k-1];
 			    seq3_align_3d.insert(0,s3k);
-
-			    score+=(2*indel);
-			    score+=((s1i==s3k)?match:mismtch);
+		
+				score+=getScore3D(s1[i-1],'-',s3[k-1]);
 			    i--;
 			    k--;
 			}
 			else if (k == 0) {
-cout << "if 6" << endl;
 			    string s1i;
 			    s1i+=s1[i-1];
 			    seq1_align_3d.insert(0,s1i);
@@ -441,14 +428,12 @@ cout << "if 6" << endl;
 			    seq2_align_3d.insert(0,s2j);
 			    seq3_align_3d.insert(0,"-");
 
-			    score+=(2*indel);
-			    score+=((s1i==s2j)?match:mismtch);
+				score+=getScore3D(s1[i-1],s2[j-1],'-');
 			    i--;
 			    j--;
 			}
 
 			else if (i>0 && j>0 && k>0) {
-cout << "if 7" << endl;
 			    string s1i;
 			    s1i+=s1[i-1];
 			    seq1_align_3d.insert(0,s1i);
@@ -458,16 +443,16 @@ cout << "if 7" << endl;
 			    string s3k;
 			    s3k+=s3[k-1];
 			    seq3_align_3d.insert(0,s3k);
-
-			    score+=((s1i==s2j)?match:mismtch);
-			    score+=((s1i==s3k)?match:mismtch);
-			    score+=((s2j==s3k)?match:mismtch);
+				if(s1[i-1]==s2[j-1] && s2[j-1]==s3[k-1]){
+					perfectly_matched++;
+					
+				}
+			    score+=getScore3D(s1[i-1],s2[j-1],s3[k-1]);
 			    i--;
 			    j--;
 			    k--;
 			}
 			else if (i>0 && j>0 && k==0) {
-cout << "if 8" << endl;
 			    string s1i;
 			    s1i+=s1[i-1];
 			    seq1_align_3d.insert(0,s1i);
@@ -476,13 +461,11 @@ cout << "if 8" << endl;
 			    seq2_align_3d.insert(0,s2j);
 			    seq3_align_3d.insert(0,"-");
 
-			    score+=(2*indel);
-			    score+=((s1i==s2j)?match:mismtch);			    
+			    score+=getScore3D(s1[i-1],s2[j-1],'-');		    
 			    i--;
 			    j--;
 			}
 			else if (i>0 && j==0 && k>0) {
-cout << "if 9" << endl;
 			    string s1i;
 			    s1i+=s1[i-1];
 			    seq1_align_3d.insert(0,s1i);
@@ -491,13 +474,11 @@ cout << "if 9" << endl;
 			    s3k+=s3[k-1];
 			    seq3_align_3d.insert(0,s3k);
 
-			    score+=(2*indel);
-			    score+=((s1i==s3k)?match:mismtch);
+			    score+=getScore3D(s1[i-1],'-',s3[k-1]);
 			    i--;
 			    k--;
 			}
 			else if (i==0 && j>0 && k==0) {
-cout << "if 10" << endl;
 			    seq1_align_3d.insert(0,"-");
 			    string s2j;
 			    s2j+=s2[j-1];
@@ -506,39 +487,35 @@ cout << "if 10" << endl;
 			    s3k+=s3[k-1];
 			    seq3_align_3d.insert(0,s3k);
 
-			    score+=(2*indel);
-			    score+=((s3k==s2j)?match:mismtch);
+			    score+=getScore3D('-',s2[j-1],s3[k-1]);
 			    j--;
 			    k--;
 			}
 			else if (i>0 && j==0 && k==0) {
-cout << "if 11" << endl;
 			    string s1i;
 			    s1i+=s1[i-1];
 			    seq1_align_3d.insert(0,s1i);
 			    seq2_align_3d.insert(0,"-");
 			    seq3_align_3d.insert(0,"-");
-			    score+=(2*indel);
+			    score+=getScore3D(s1[i-1],'-','-');
 			    i--;
 			}
 			else if (i>0 && j>0 && k==0) {
-cout << "if 12" << endl;
 			    seq1_align_3d.insert(0,"-");
 			    string s2j;
 			    s2j+=s2[j-1];
 			    seq2_align_3d.insert(0,s2j);
 			    seq3_align_3d.insert(0,"-");
-			    score+=(2*indel);
+			    score+=getScore3D('-',s2[j-1],'-');
 			    j--;
 			}
 			else if (i>0 && j==0 && k>0) {
-cout << "if 13" << endl;
 			    seq1_align_3d.insert(0,"-");
 			    seq2_align_3d.insert(0,"-");
 			    string s3k;
 			    s3k+=s3[k-1];
 			    seq3_align_3d.insert(0,s3k);
-			    score+=(2*indel);
+			    score+=getScore3D('-','-',s3[k-1]);
 			    k--;
 			}
 			cout << score << endl;
@@ -554,8 +531,10 @@ cout << "if 13" << endl;
 		cout << seq2_align_3d << endl;
 		cout << seq3_align_3d << endl;
 
-		
-		return score+=score;
+		score_overall+=score;
+			
+
+		return score;
 	}
 	
 
@@ -564,20 +543,23 @@ cout << "if 13" << endl;
 
 	
 	//Recursively call on first half
-	int score_first = threeSeqAlign(s1_first, s2_first, s3_first, sizeof(s1_first), sizeof(s2_first), sizeof(s3_first));
+	threeSeqAlign(s1_first, s2_first, s3_first, sizeof(s1_first), sizeof(s2_first), sizeof(s3_first));
 
 	//Recursively call on second half
-	int score_second = threeSeqAlign(s1_second, s2_second, s3_second, sizeof(s1_second), sizeof(s2_second), sizeof(s3_second));
-	
-	score=score_first+score_second;
+	threeSeqAlign(s1_second, s2_second, s3_second, sizeof(s1_second), sizeof(s2_second), sizeof(s3_second));
+
+	//Final alignment and score
 	cout << s1temp << endl;
 	cout << s2temp << endl;
 	cout << s3temp << endl;
-	return score;
+	
+	cout << "Length of alignment: " << s1temp.length() << endl;
+	cout << "Perfectly matched nucleotides: " << perfectly_matched << endl;
+	return score_overall;
 }
 
 int main(int argc, char** argv){
-	
+	auto start = std::chrono::high_resolution_clock::now();
 	//sequence 1
 	ifstream ifs(argv[1]);
 	string s1_t;
@@ -605,11 +587,11 @@ int main(int argc, char** argv){
 	strcpy(s3, s3_t.c_str());
 	size_seq3=sizeof(s3);
 
-	cout << "s1: " << s1 << endl;
-	cout << "s2: " << s2 << endl;
-	cout << "s3: " << s3 << endl;
-	
-	threeSeqAlign(s1,s2, s3, sizeof(s1), sizeof(s2), sizeof(s3));
+	int score = threeSeqAlign(s1,s2, s3, sizeof(s1), sizeof(s2), sizeof(s3));
 
+	auto finish = std::chrono::high_resolution_clock::now();
+	chrono::duration<double> elapsed = finish - start;
+	cout << "Score: " << score << endl;
+	cout << "Elapsed time: " << elapsed.count() << " s\n";
 
 }
