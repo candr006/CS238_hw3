@@ -370,6 +370,7 @@ int threeSeqAlign(char s1[], char s2[], char s3[], int size1, int size2, int siz
 		while(i>0 || j>0 || k>0){
 			cout << "s["<< i <<","<< j <<","<< k <<"]: ";
 			if(i==0 && j==0){
+				cout << "if 1" << endl;
 				seq1_align_3d.insert(0,"-");
 				seq2_align_3d.insert(0,"-");
 				string s3k;
@@ -379,6 +380,7 @@ int threeSeqAlign(char s1[], char s2[], char s3[], int size1, int size2, int siz
 				k--;
 			}
 			else if (i == 0 && k == 0) {
+			    cout << "if 2" << endl;
 			    seq1_align_3d.insert(0,"-");
 			    string s2j;
 			    s2j+=s2[j-1];
@@ -388,6 +390,7 @@ int threeSeqAlign(char s1[], char s2[], char s3[], int size1, int size2, int siz
 			    j--;
 			}
 			else if (j == 0 && k == 0) {
+			    cout << "if 3" << endl;
 			    string s1i;
 			    s1i+=s1[i-1];
 			    seq1_align_3d.insert(0,s1i);
@@ -397,6 +400,7 @@ int threeSeqAlign(char s1[], char s2[], char s3[], int size1, int size2, int siz
 			    i--;
 			}
 			else if (i == 0) {
+cout << "if 4" << endl;
 			    seq1_align_3d.insert(0,"-");
 			    string s2j;
 			    s2j+=s2[j-1];
@@ -411,6 +415,7 @@ int threeSeqAlign(char s1[], char s2[], char s3[], int size1, int size2, int siz
 			    k--;
 			}
 			else if (j == 0) {
+cout << "if 5" << endl;
 			    string s1i;
 			    s1i+=s1[i-1];
 			    seq1_align_3d.insert(0,s1i);
@@ -425,6 +430,7 @@ int threeSeqAlign(char s1[], char s2[], char s3[], int size1, int size2, int siz
 			    k--;
 			}
 			else if (k == 0) {
+cout << "if 6" << endl;
 			    string s1i;
 			    s1i+=s1[i-1];
 			    seq1_align_3d.insert(0,s1i);
@@ -440,6 +446,7 @@ int threeSeqAlign(char s1[], char s2[], char s3[], int size1, int size2, int siz
 			}
 
 			else if (i>0 && j>0 && k>0) {
+cout << "if 7" << endl;
 			    string s1i;
 			    s1i+=s1[i-1];
 			    seq1_align_3d.insert(0,s1i);
@@ -458,6 +465,7 @@ int threeSeqAlign(char s1[], char s2[], char s3[], int size1, int size2, int siz
 			    k--;
 			}
 			else if (i>0 && j>0 && k==0) {
+cout << "if 8" << endl;
 			    string s1i;
 			    s1i+=s1[i-1];
 			    seq1_align_3d.insert(0,s1i);
@@ -472,6 +480,7 @@ int threeSeqAlign(char s1[], char s2[], char s3[], int size1, int size2, int siz
 			    j--;
 			}
 			else if (i>0 && j==0 && k>0) {
+cout << "if 9" << endl;
 			    string s1i;
 			    s1i+=s1[i-1];
 			    seq1_align_3d.insert(0,s1i);
@@ -486,6 +495,7 @@ int threeSeqAlign(char s1[], char s2[], char s3[], int size1, int size2, int siz
 			    k--;
 			}
 			else if (i==0 && j>0 && k==0) {
+cout << "if 10" << endl;
 			    seq1_align_3d.insert(0,"-");
 			    string s2j;
 			    s2j+=s2[j-1];
@@ -500,6 +510,7 @@ int threeSeqAlign(char s1[], char s2[], char s3[], int size1, int size2, int siz
 			    k--;
 			}
 			else if (i>0 && j==0 && k==0) {
+cout << "if 11" << endl;
 			    string s1i;
 			    s1i+=s1[i-1];
 			    seq1_align_3d.insert(0,s1i);
@@ -509,6 +520,7 @@ int threeSeqAlign(char s1[], char s2[], char s3[], int size1, int size2, int siz
 			    i--;
 			}
 			else if (i>0 && j>0 && k==0) {
+cout << "if 12" << endl;
 			    seq1_align_3d.insert(0,"-");
 			    string s2j;
 			    s2j+=s2[j-1];
@@ -518,6 +530,7 @@ int threeSeqAlign(char s1[], char s2[], char s3[], int size1, int size2, int siz
 			    j--;
 			}
 			else if (i>0 && j==0 && k>0) {
+cout << "if 13" << endl;
 			    seq1_align_3d.insert(0,"-");
 			    seq2_align_3d.insert(0,"-");
 			    string s3k;
