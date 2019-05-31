@@ -15,28 +15,14 @@ int match=5;
 int mismtch=-4;
 int indel=-8;
 
+int base_case_size=3;
+
 int size_seq1=0;
 int size_seq2=0;
 int size_seq3=0;
 
 string seq1_align="";
 string seq2_align="";
-
-map<pair<int,int>, int> gap_locations2D;
-
-void addGap(char* seq, int gap_pos){
-
-	char* seq_updated;
-	
-	for(int i=sizeof(seq); i>gap_pos; i--)
-	{
-		seq_updated[i]=seq[i-1];
-	}
-	seq_updated[gap_pos]='-';
-	
-	seq=seq_updated;
-	return;
-}
 
 int getScore(char s1, char s2){
 	if((s1==s2) && (s1!='-')){
@@ -95,8 +81,7 @@ int getMaxIndex2D(int **s, int col, int size){
 }
 
 //returns the score of the alignment
-int pairAlign(char *seq1, char *seq2, int size1, int size2){
-	gap_locations2D.clear();
+pair<int,string> pairAlign(char *seq1, char *seq2, int size1, int size2){
 	int score=0; 
 	
 	//cout << "PAIR ALIGN" << seq1 << " - " << seq2 << endl;
@@ -240,10 +225,10 @@ int pairAlign(char *seq1, char *seq2, int size1, int size2){
 
 	}
 
-	//cout << seq1_align << endl;
-	//cout << seq2_align << endl;
-	
-	return score;
+
+	string str= seq1_align+"^"+seq2_align;
+	pair<int, string> p = make_pair(score, str);
+	return p;
 
 }
 
@@ -258,7 +243,12 @@ int getScore3D(char s1, char s2, char s3){
 }
 
 
-int getMax3D(int v1, int v2, int v3, int v4, int v5, int v6, int v7){
+int getMax3D(int v1, int v2, int v3, int v4, int v5, int v6, int v7){te that besides Figure 6.28, a useful recurrence 
+    relation is also given on page 33 of "Updated slides on 
+    similarity based gene prediction". You should show how 
+    to incorporate the function P(i,j) into your improved
+    recurrence relation (i.e., your new recurrence relation
+    should define both functions S(i,j,B) and P(i,j)).
 	int m1=getMax2D(v1,v2,v3);
 	int m2=getMax2D(v4,v5,v6);
 	int m3=getMax2D(m1,m2,v7);
@@ -266,35 +256,48 @@ int getMax3D(int v1, int v2, int v3, int v4, int v5, int v6, int v7){
 	return m3;
 }
 
+string getPart(string s, string delimiter, int part){
+	int found = s.find(delimiter);
+	if(part==1){
+		return s.substr(0,found);
+	}else{
+		return s.substr((found+1));
+	}
+}
 
-string seq1_align_3d="";
-string seq2_align_3d="";
-string seq3_align_3d="";
-int score=0;
+
+
 int threeSeqAlign(char s1[], char s2[], char s3[], int size1, int size2, int size3){
 	int s[size1][size2][size3];
+	int score=0;
+	string seq1_align_3d="";
+	string seq2_align_3d="";
+	string seq3_align_3d="";
 
 	//cout << "s1-" << size1 <<": "<< s1 << endl;
 	//cout << "s2-" << size2 <<": "<< s2 << endl;
 	//cout << "s3-" << size3 <<": "<< s3 << endl;
 	
 	
-	//initialization
+	//----initialization of 3D dp table----
 	for(int j=0; j< size2; j++){
 		for(int k=0; k<size3; k++){
-			s[0][j][k]=pairAlign(s2,s3, size2, size3);
+			pair<int, string> p=pairAlign(s2,s3, size2, size3);
+			s[0][j][k]=p.first;
 		}
 	}
 	
 	for(int i=0; i< size1; i++){
 		for(int k=0; k<size3; k++){
-			s[i][0][k]=pairAlign(s1,s3, size1, size3);
+			pair<int, string> p=pairAlign(s2,s3, size2, size3);
+			s[i][0][k]=p.first;
 		}
 	}
 	
 	for(int i=0; i< size1; i++){
 		for(int j=0; j<size2; j++){
-			s[i][j][0]=pairAlign(s1,s2, size1, size2);
+			pair<int, string> p=pairAlign(s2,s3, size2, size3);
+			s[i][j][0]=p.first;
 		}
 	}
 	
@@ -338,7 +341,7 @@ int threeSeqAlign(char s1[], char s2[], char s3[], int size1, int size2, int siz
 	
 	
 		
-	if((size1)<=1 ||(size2)<=1 || (size3)<=1){
+	if((size1)<=base_case_size ||(size2)<=base_case_size || (size3)<=base_case_size){
 	// if you can't divide sequences further, make dp table
 		for(int i=1; i<size1; i++){
 			for(int j=1; j<size2; j++){
@@ -357,27 +360,42 @@ int threeSeqAlign(char s1[], char s2[], char s3[], int size1, int size2, int siz
 		}
 
 
-
-		//traceback
 		
-		char s1_comp = (s1[0] != '\0')?s1[0]:'-';
+		/*char s1_comp = (s1[0] != '\0')?s1[0]:'-';
 		char s2_comp = (s2[0] != '\0')?s2[0]:'-';
-		char s3_comp = (s3[0] != '\0')?s3[0]:'-';
+		char s3_comp = (s3[0] != '\0')?s3[0]:'-';*/
 		
 		cout << "s1- " <<size1 << ": " << s1 << endl;
 		cout << "s2- " <<size2 << ": " << s2 << endl;
 		cout << "s3- " <<size3 << ": " << s3 << endl;
 
-		score+=getScore3D(s1_comp,s2_comp,s3_comp);
+		pair<int, string> p1=pairAlign(s1,s2,size1,size2);
+		score+=p1.first;
+		seq1_align_3d+=getPart(p1.second,"^",1);
+		seq2_align_3d+=getPart(p1.second,"^",2);
+
+		pair<int, string> p2=pairAlign(s2,s3,size2,size3);
+		score+=p2.first;
+		seq2_align_3d+=getPart(p2.second,"^",1);
+		seq3_align_3d+=getPart(p2.second,"^",2);
+
+		pair<int, string> p3=pairAlign(s1,s3,size1,size3);
+		score+=p3.first;
+		seq1_align_3d+=getPart(p3.second,"^",1);
+		seq3_align_3d+=getPart(p3.second,"^",2);
+
 		
-		seq1_align_3d+=s1_comp;
+		/*seq1_align_3d+=s1_comp;
 		seq2_align_3d+=s2_comp;
-		seq3_align_3d+=s3_comp;
+		seq3_align_3d+=s3_comp;*/
 		
-		cout << "------------------------------------------" << endl;
+		cout << "---------------------------------------------------------------------------------------------------------" << endl;
 		cout << "ALIGNMENT: " << endl;
+		cout << endl<< "seq1--------------------------------------" << endl;
 		cout << seq1_align_3d << endl;
+		cout << endl<< "seq2--------------------------------------" << endl;
 		cout << seq2_align_3d << endl;
+		cout << endl<< "seq3--------------------------------------" << endl;
 		cout << seq3_align_3d << endl;
 		
 		cout << "SCORE: " << score << endl;
